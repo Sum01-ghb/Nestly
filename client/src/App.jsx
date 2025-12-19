@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Feed from "./pages/Feed";
 import Messages from "./pages/Messages";
-import ChatBox from "./pages/ChatBox";
+import ChatBox from "./pages/Chatbox";
 import Connections from "./pages/Connections";
 import Discover from "./pages/Discover";
 import Profile from "./pages/Profile";
