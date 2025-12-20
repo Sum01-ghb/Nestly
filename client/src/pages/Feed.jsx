@@ -19,9 +19,9 @@ const Feed = () => {
   }, []);
 
   return !loading ? (
-    <div className="relative bg-linear-to-br from-sky-100/80 to-sky-300/50 min-h-screen overflow-hidden pl-0 lg:pl-60 xl:pl-72 no-scrollbar py-10 xl:pr-5 flex items-start justify-center xl:gap-8">
-      <div className="absolute z-0 -top-30 -right-30 w-150 h-150 bg-linear-to-bl from-indigo-300/50 to-sky-300/30 rounded-full blur-xl" />
-      <div className="absolute z-0 -bottom-10 -left-2 w-200 h-120 bg-linear-to-tr from-purple-300/20 bg-indigo-500/20 rounded-full blur-2xl" />
+    <div className="relative bg-linear-to-br from-violet-100 to-sky-100 min-h-screen overflow-hidden pl-0 lg:pl-60 xl:pl-72 no-scrollbar py-10 xl:pr-5 flex items-start justify-center xl:gap-8">
+      <div className="absolute z-0 -top-30 -right-30 w-150 h-150 bg-linear-to-bl from-indigo-300/50 to-sky-300/30 rounded-full blur-2xl" />
+      <div className="absolute z-0 -bottom-10 -left-2 w-200 h-120 bg-linear-to-tr from-purple-300/20 bg-indigo-500/20 rounded-full blur-3xl" />
       {/* <div className="absolute top-[40%] left-[50%] -translate-x-1/2 w-120 h-120 bg-cyan-500/20 rounded-full blur-2xl" /> */}
 
       {/* Stories and post list */}
