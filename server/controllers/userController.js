@@ -2,6 +2,8 @@ import imagekit from "../configs/imageKit.js";
 import User from "../models/User.js";
 import fs from "fs";
 import Connection from "../models/Connection.js";
+import Post from "../models/Post.js";
+import { inngest } from "../inngest/index.js";
 
 export const getUserData = async (req, res) => {
   try {
@@ -158,7 +160,7 @@ export const sendConnectionRequest = async (req, res) => {
     const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const connectionRequests = await Connection.find({
       from_user_id: userId,
-      createdAt: { $gt: last24Hours },
+      created_at: { $gt: last24Hours },
     });
     if (connectionRequests.length >= 20) {
       return res.json({
@@ -176,7 +178,15 @@ export const sendConnectionRequest = async (req, res) => {
     });
 
     if (!connection) {
-      await Connection.create({ from_user_id: userId, to_user_id: id });
+      const newConnection = await Connection.create({
+        from_user_id: userId,
+        to_user_id: id,
+      });
+      await inngest.send({
+        name: "app/connection-request",
+        data: { connectionId: newConnection._id },
+      });
+
       return res.json({
         success: true,
         message: "Connection request sent successfully",
@@ -250,6 +260,21 @@ export const acceptConnectionRequest = async (req, res) => {
     connection.status = "accepted";
     await connection.save();
     res.json({ success: true, message: "Connection accepted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export const getUserProfiles = async (req, res) => {
+  try {
+    const { profileId } = req.body;
+    const profile = await User.findById(profileId);
+    if (!profile)
+      return res.json({ success: false, message: "Profile not found" });
+
+    const posts = await Post.find({ user: profileId }).populate("user");
+    res.json({ success: true, profile, posts });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
