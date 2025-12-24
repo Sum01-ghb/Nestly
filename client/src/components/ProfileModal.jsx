@@ -1,9 +1,15 @@
 import { useState } from "react";
-import { dummyUserData } from "../assets/assets.js";
 import { Pencil } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "../features/user/userSlice.js";
+import { useAuth } from "@clerk/clerk-react";
+import toast from "react-hot-toast";
 
 const ProfileModal = ({ setShowEdit }) => {
-  const user = dummyUserData;
+  const dispatch = useDispatch();
+  const { getToken } = useAuth();
+
+  const user = useSelector((state) => state.user.value);
   const [editForm, setEditForm] = useState({
     username: user.username,
     bio: user.bio,
@@ -15,6 +21,30 @@ const ProfileModal = ({ setShowEdit }) => {
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+    try {
+      const userData = new FormData();
+      const {
+        full_name,
+        username,
+        bio,
+        location,
+        profile_picture,
+        cover_photo,
+      } = editForm;
+
+      userData.append("username", username);
+      userData.append("bio", bio);
+      userData.append("location", location);
+      userData.append("full_name", full_name);
+      profile_picture && userData.append("profile", profile_picture);
+      cover_photo && userData.append("cover", cover_photo);
+
+      const token = await getToken();
+      dispatch(updateUser({ userData, token }));
+      setShowEdit(false);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -24,7 +54,12 @@ const ProfileModal = ({ setShowEdit }) => {
           <h1 className="text-2xl font-bold text-gray-900 mb-6">
             Edit Profile
           </h1>
-          <form onSubmit={handleSaveProfile} className="space-y-4">
+          <form
+            onSubmit={(e) =>
+              toast.promise(handleSaveProfile(e), { loading: "Saving..." })
+            }
+            className="space-y-4"
+          >
             {/* Profile picture */}
             <div className="flex flex-col items-start gap-3">
               <label
@@ -168,7 +203,7 @@ const ProfileModal = ({ setShowEdit }) => {
                 Cancel
               </button>
               <button
-                type="button"
+                type="submit"
                 className="px-4 py-2 bg-linear-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-800 transition text-white rounded-lg cursor-pointer"
               >
                 Save Changes

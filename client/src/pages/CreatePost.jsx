@@ -1,16 +1,55 @@
 import { useState } from "react";
-import { dummyUserData } from "../assets/assets.js";
 import { Image, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { useAuth } from "@clerk/clerk-react";
+import api from "../api/axios.js";
+import { useNavigate } from "react-router-dom";
 
 const CreatePost = () => {
+  const navigate = useNavigate();
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const user = dummyUserData;
+  const user = useSelector((state) => state.user.value);
+  const { getToken } = useAuth();
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+    if (!images.length && !content) {
+      return toast.error("Please add atleast one image or text");
+    }
+    setLoading(true);
+
+    const postType =
+      images.length && content
+        ? "text_with_image"
+        : images.length
+        ? "image"
+        : "text";
+    try {
+      const formData = new FormData();
+      formData.append("content", content);
+      formData.append("post_type", postType);
+
+      images.map((image) => {
+        formData.append("images", image);
+      });
+      const { data } = await api.post("/api/post/add", formData, {
+        headers: { Authorization: `Bearer ${await getToken()}` },
+      });
+
+      if (data.success) {
+        navigate("/");
+      } else {
+        console.log(data.message);
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.log(error.message);
+      throw new Error(error.message);
+    }
+  };
 
   return (
     <div className="min-h-screen relative overflow-y-scroll p-6 bg-linear-to-br from-violet-100 to-sky-100 pl-0 lg:pl-60 xl:pl-72 no-scrollbar overflow-hidden">
