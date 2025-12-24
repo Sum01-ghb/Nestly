@@ -1,9 +1,10 @@
 import { Eye, MessageSquare } from "lucide-react";
-import { dummyConnectionsData } from "../assets/assets.js";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Messages = () => {
   const navigate = useNavigate();
+  const { connections } = useSelector((state) => state.connections);
 
   return (
     <div className="min-h-screen relative bg-linear-to-br from-violet-100 to-sky-100 pl-0 lg:pl-60 xl:pl-72 no-scrollbar overflow-hidden">
@@ -19,7 +20,7 @@ const Messages = () => {
 
         {/* Connected Users */}
         <div className="flex flex-col gap-3 z-20">
-          {dummyConnectionsData.map((user) => (
+          {connections.map((user) => (
             <div
               key={user._id}
               className="max-w-xl flex flex-wrap gap-5 p-6 bg-white shadow rounded-md z-10"

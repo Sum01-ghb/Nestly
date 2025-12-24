@@ -1,8 +1,8 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import Feed from "./pages/Feed";
 import Messages from "./pages/Messages";
-import ChatBox from "./pages/Chatbox";
+import ChatBox from "./pages/ChatBox";
 import Connections from "./pages/Connections";
 import Discover from "./pages/Discover";
 import Profile from "./pages/Profile";
@@ -10,15 +10,52 @@ import CreatePost from "./pages/CreatePost";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import Layout from "./pages/Layout";
 import { Toaster } from "react-hot-toast";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { fetchUser } from "./features/user/userSlice.js";
+import { fetchConnections } from "./features/connections/connectionsSlice.js";
+import { addMessage } from "./features/messages/messagesSlice.js";
 
 const App = () => {
   const { user } = useUser();
   const { getToken } = useAuth();
+  const dispatch = useDispatch();
+  const { pathname } = useLocation();
+  const pathnameRef = useRef(pathname);
 
   useEffect(() => {
-    if (user) getToken().then((token) => console.log(token));
-  }, [user]);
+    const fetchData = async () => {
+      if (user) {
+        const token = await getToken();
+        dispatch(fetchUser(token));
+        dispatch(fetchConnections(token));
+      }
+    };
+    fetchData();
+  }, [user, getToken, dispatch]);
+
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
+
+  useEffect(() => {
+    if (user) {
+      const eventSource = new EventSource(
+        import.meta.env.VITE_BASEURL + "/api/message/" + user.id
+      );
+      eventSource.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (pathnameRef.current === "/messages/" + message.from_user_id._id) {
+          dispatch(addMessage(message));
+        } else {
+        }
+      };
+
+      return () => {
+        eventSource.close();
+      };
+    }
+  }, [user, dispatch]);
 
   return (
     <>
