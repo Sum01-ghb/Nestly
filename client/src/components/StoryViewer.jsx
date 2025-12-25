@@ -1,10 +1,18 @@
 import { BadgeCheck, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { closeSidebar } from "../features/sidebar/sidebarSlice";
+import { setViewStory } from "../features/story/storySlice";
 
-const StoryViewer = ({ viewStory, setViewStory }) => {
+const StoryViewer = ({ viewStory }) => {
   const [progress, setProgress] = useState(0);
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    if (viewStory && window.innerWidth < 1028) {
+      dispatch(closeSidebar());
+    }
+
     let timer, progressInterval;
     if (viewStory && viewStory.media_type !== "video") {
       setProgress(0);
@@ -18,7 +26,7 @@ const StoryViewer = ({ viewStory, setViewStory }) => {
       }, setTime);
 
       timer = setTimeout(() => {
-        setViewStory(null);
+        dispatch(setViewStory(null));
       }, duration);
     }
 
@@ -26,10 +34,10 @@ const StoryViewer = ({ viewStory, setViewStory }) => {
       clearTimeout(timer);
       clearInterval(progressInterval);
     };
-  }, [viewStory, setViewStory]);
+  }, [viewStory, dispatch]);
 
   const handleClose = () => {
-    setViewStory(null);
+    dispatch(setViewStory(null));
   };
 
   if (!viewStory) return null;
