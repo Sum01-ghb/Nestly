@@ -3,18 +3,20 @@ import { assets } from "../assets/assets.js";
 import MenuItems from "./MenuItems.jsx";
 import { CirclePlus, LogOut } from "lucide-react";
 import { useClerk, UserButton } from "@clerk/clerk-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { closeSidebar } from "../features/sidebar/sidebarSlice";
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.value);
   const { signOut } = useClerk();
+  const dispatch = useDispatch();
 
   return (
     <div
-      className={`fixed w-60 xl:w-72 bg-linear-to-b from-sky-100 to-blue-200 border-r border-indigo-400/50 flex flex-col justify-between items-center max-sm:absolute top-0 bottom-0 z-20 ${
-        sidebarOpen ? "translate-x-0" : "max-sm:-translate-x-full"
-      } transition-all duration-300 ease-in-out`}
+      className={`fixed top-0 left-0 bottom-0 w-60 xl:w-72 bg-linear-to-b from-sky-100 to-blue-200 border-r border-indigo-400/50 flex flex-col justify-between z-30 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
     >
       <div className="w-full">
         <img
@@ -25,10 +27,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         />
         <hr className="border-indigo-300 mb-8" />
 
-        <MenuItems setSidebarOpen={setSidebarOpen} />
+        <MenuItems setSidebarOpen={() => dispatch(closeSidebar())} />
         <Link
           to="/create-post"
           className="flex items-center justify-center gap-2 py-2.5 mt-6 mx-6 rounded-lg bg-linear-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-800 active:scale-95 transition text-white cursor-pointer"
+          onClick={() => dispatch(closeSidebar())}
         >
           <CirclePlus className="w-5 h-5" />
           Create Post

@@ -6,12 +6,15 @@ import StoryViewer from "./StoryViewer.jsx";
 import { useAuth } from "@clerk/clerk-react";
 import api from "../api/axios.js";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { setViewStory } from "../features/story/storySlice";
 
 const StoriesBar = () => {
   const { getToken } = useAuth();
   const [stories, setStories] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [viewStory, setViewStory] = useState(null);
+  const dispatch = useDispatch();
+  const viewStory = useSelector((state) => state.story.viewStory);
 
   const fetchStories = async () => {
     try {
@@ -54,7 +57,7 @@ const StoriesBar = () => {
 
         {stories.map((story, index) => (
           <div
-            onClick={() => setViewStory(story)}
+            onClick={() => dispatch(setViewStory(story))}
             key={index}
             className={`relative rounded-lg shadow min-w-30 max-w-32 max-h-40 cursor-pointer hover:shadow-lg transition-all duration-200 bg-linear-to-b from-indigo-500 to-purple-600 hover:from-indigo-700 hover:to-purple-800 active:scale-95`}
           >
@@ -97,7 +100,10 @@ const StoriesBar = () => {
 
       {/* View story modal  */}
       {viewStory && (
-        <StoryViewer viewStory={viewStory} setViewStory={setViewStory} />
+        <StoryViewer
+          viewStory={viewStory}
+          setViewStory={(story) => dispatch(setViewStory(story))}
+        />
       )}
     </div>
   );
