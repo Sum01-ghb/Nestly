@@ -53,8 +53,8 @@ const CreatePost = () => {
 
   return (
     <div className="min-h-screen relative overflow-y-scroll p-6 bg-linear-to-br from-violet-100 to-sky-100 pl-0 lg:pl-60 xl:pl-72 no-scrollbar overflow-hidden">
-      <div className="absolute z-0 -top-30 -right-30 w-150 h-150 bg-linear-to-bl from-indigo-300/50 to-sky-300/30 rounded-full blur-2xl" />
-      <div className="absolute z-0 -bottom-10 -left-2 w-200 h-120 bg-linear-to-tr from-purple-300/20 bg-indigo-500/20 rounded-full blur-3xl" />
+      <div className="hidden sm:block absolute z-0 -top-30 -right-30 w-150 h-150 bg-linear-to-bl from-indigo-300/50 to-sky-300/30 rounded-full blur-2xl pointer-events-none" />
+      <div className="hidden sm:block absolute z-0 -bottom-10 -left-2 w-200 h-120 bg-linear-to-tr from-purple-300/20 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-6xl mx-auto p-6">
         {/* Title */}
